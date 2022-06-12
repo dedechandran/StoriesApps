@@ -11,13 +11,24 @@ interface CoroutineUseCaseRunner {
         onLoading: ((Boolean) -> Unit)? = null,
         onError: ((String) -> Unit)? = null,
         onSuccess: (T) -> Unit,
-        block: (suspend () -> Flow<T>)
+        block: (suspend () -> Flow<Result<T>>)
     ){
         coroutineScope.launch {
             block.invoke()
                 .onStart { onLoading?.invoke(true) }
-                .onEach { onSuccess.invoke(it) }
-                .catch { onError?.invoke("Unknown Error") }
+                .onEach { result ->
+                    if (result.isSuccess) {
+                        result.getOrNull()?.let {
+                            onSuccess.invoke(it)
+                        }
+                    }else {
+                        result.exceptionOrNull()?.let {
+                            onError?.invoke(it.message ?: "Unknown Error")
+                        }
+                    }
+                }
+                .catch { onError?.invoke(it.message ?: "Unknown Error") }
+                .onCompletion { onLoading?.invoke(false) }
                 .launchIn(coroutineScope)
         }
     }

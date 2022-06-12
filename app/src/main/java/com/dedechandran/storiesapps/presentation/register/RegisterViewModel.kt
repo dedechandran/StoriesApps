@@ -2,30 +2,25 @@ package com.dedechandran.storiesapps.presentation.register
 
 import android.util.Patterns
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import com.dedechandran.storiesapps.common.SingleLiveEvent
 import com.dedechandran.storiesapps.domain.RegisterUseCase
+import com.dedechandran.storiesapps.presentation.BaseViewModel
+import com.dedechandran.storiesapps.presentation.TextInputState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor(private val registerUseCase: RegisterUseCase): ViewModel() {
+class RegisterViewModel @Inject constructor(private val registerUseCase: RegisterUseCase): BaseViewModel() {
 
-    val name = MutableLiveData<String>()
-    val email = MutableLiveData<String>()
-    val password = MutableLiveData<String>()
-
-    val nameErrorMessage = Transformations.map(name) {
-        if(it.isNullOrEmpty()) {
+    val name = TextInputState() {
+        if(it.isEmpty()) {
             "Name is required"
         }else {
             null
         }
     }
 
-    val emailErrorMessage = Transformations.map(email) {
+    val email = TextInputState() {
         if(!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
             "Invalid email"
         }else {
@@ -33,7 +28,7 @@ class RegisterViewModel @Inject constructor(private val registerUseCase: Registe
         }
     }
 
-    val passwordErrorMessage = Transformations.map(password) {
+    val password = TextInputState() {
         if(it.length < 6) {
             "Password is less than 6 character"
         }else {
@@ -42,19 +37,32 @@ class RegisterViewModel @Inject constructor(private val registerUseCase: Registe
     }
 
     val isBtnRegisterEnabled = MediatorLiveData<Boolean>().apply {
-        addSource(nameErrorMessage) {
-            value = it.isNullOrEmpty().not() && emailErrorMessage.value.isNullOrEmpty().not() && passwordErrorMessage.value.isNullOrEmpty().not()
+        addSource(name.errorMessage) {
+            value = it.isNullOrEmpty() && email.errorMessage.value.isNullOrEmpty() && password.errorMessage.value.isNullOrEmpty()
         }
-        addSource(emailErrorMessage) {
-            value = it.isNullOrEmpty().not() && nameErrorMessage.value.isNullOrEmpty().not() && passwordErrorMessage.value.isNullOrEmpty().not()
+        addSource(email.errorMessage) {
+            value = it.isNullOrEmpty() && name.errorMessage.value.isNullOrEmpty() && password.errorMessage.value.isNullOrEmpty()
         }
-        addSource(passwordErrorMessage) {
-            value = it.isNullOrEmpty().not() && nameErrorMessage.value.isNullOrEmpty().not() && emailErrorMessage.value.isNullOrEmpty().not()
+        addSource(password.errorMessage) {
+            value = it.isNullOrEmpty() && name.errorMessage.value.isNullOrEmpty() && email.errorMessage.value.isNullOrEmpty()
         }
     }
 
-    fun register() {
+    val successfullyRegisterEvent = SingleLiveEvent<Unit>()
 
+    fun register() {
+        withUseCaseScope(
+            onSuccess = {
+                successfullyRegisterEvent.setValue(Unit)
+            }
+        ) {
+            val params = RegisterUseCase.Params(
+                name = name.text.value.orEmpty(),
+                email = email.text.value.orEmpty(),
+                password = password.text.value.orEmpty()
+            )
+            registerUseCase.invoke(params)
+        }
     }
 
 }

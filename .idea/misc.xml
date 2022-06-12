@@ -4,9 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.135" />
+        <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/drawable/ic_baseline_arrow_back_48.xml" value="0.1" />
         <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/layout/activity_main.xml" value="0.3241206030150754" />
-        <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/layout/fragment_login.xml" value="0.18" />
-        <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/layout/fragment_register.xml" value="0.16" />
+        <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/layout/fragment_loading_dialog.xml" value="0.2" />
+        <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/layout/fragment_login.xml" value="0.16" />
+        <entry key="..\:/SourceCode/StoriesApps/app/src/main/res/layout/fragment_register.xml" value="0.18" />
       </map>
     </option>
   </component>

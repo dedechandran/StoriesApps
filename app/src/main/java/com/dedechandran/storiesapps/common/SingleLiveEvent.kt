@@ -25,6 +25,10 @@ class SingleLiveEvent<T>: MutableLiveData<T>() {
         super.setValue(value)
     }
 
+    fun call() {
+        super.setValue(null)
+    }
+
     companion object {
         private const val TAG = "SingleLiveEvent"
     }

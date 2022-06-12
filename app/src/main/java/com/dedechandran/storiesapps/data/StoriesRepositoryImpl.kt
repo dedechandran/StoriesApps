@@ -18,7 +18,7 @@ import kotlin.Result
 class StoriesRepositoryImpl @Inject constructor(
     private val storiesApi: StoriesApi,
     private val sessionManager: SessionManager
-): StoriesRepository {
+) : StoriesRepository {
 
     override suspend fun login(email: String, password: String): Flow<Result<LoginModel>> {
         return flow {
@@ -26,14 +26,14 @@ class StoriesRepositoryImpl @Inject constructor(
                 email = email,
                 password = password
             )
-            when (val result = storiesApi.login(request)){
+            when (val result = storiesApi.login(request)) {
                 is NetworkResponse.Success -> {
                     val data = result.body.toLoginModel()
                     emit(Result.success(data))
                 }
 
                 is NetworkResponse.ApiError -> {
-                    when(result.code) {
+                    when (result.code) {
                         400 -> emit(Result.failure(StoriesException.BadRequestException))
                         401 -> emit(Result.failure(StoriesException.UserUnauthorizedException))
                         404 -> emit(Result.failure(StoriesException.UserNotFoundException))
@@ -51,20 +51,24 @@ class StoriesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun register(name: String, email: String, password: String): Flow<Result<Unit>> {
+    override suspend fun register(
+        name: String,
+        email: String,
+        password: String
+    ): Flow<Result<Unit>> {
         return flow {
             val request = RegisterRequest(
                 name = name,
                 email = email,
                 password = password
             )
-            when (val result = storiesApi.register(request)){
+            when (val result = storiesApi.register(request)) {
                 is NetworkResponse.Success -> {
                     emit(Result.success(Unit))
                 }
 
                 is NetworkResponse.ApiError -> {
-                    when(result.code) {
+                    when (result.code) {
                         400 -> emit(Result.failure(StoriesException.BadRequestException))
                     }
                 }
@@ -80,15 +84,11 @@ class StoriesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveLoginSession(loginSession: Result<LoginModel>): Flow<Result<Unit>> {
-       return flow {
-           try {
-               val data = loginSession.getOrThrow()
-               sessionManager.saveLoginSession(data.toLoginEntity())
-               emit(Result.success(Unit))
-           }catch (e: Exception) {
-               emit(Result.failure(e))
-           }
-       }
+    override suspend fun saveLoginSession(loginSession: LoginModel): Flow<Result<Unit>> {
+        return flow {
+            runCatching {
+                sessionManager.saveLoginSession(loginSession.toLoginEntity())
+            }
+        }
     }
 }

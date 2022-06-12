@@ -13,7 +13,14 @@ class LoginUseCase @Inject constructor(private val repository: StoriesRepository
             email = params.email,
             password = params.password
         ).flatMapConcat { result ->
-            repository.saveLoginSession(result)
+            result.fold(
+                onSuccess = {
+                    repository.saveLoginSession(it)
+                },
+                onFailure = {
+                   flowOf(Result.failure(it))
+                }
+            )
         }
     }
 
