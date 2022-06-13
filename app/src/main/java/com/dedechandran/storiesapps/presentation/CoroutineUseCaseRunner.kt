@@ -10,17 +10,15 @@ interface CoroutineUseCaseRunner {
     fun <T> withUseCaseScope(
         onLoading: ((Boolean) -> Unit)? = null,
         onError: ((String) -> Unit)? = null,
-        onSuccess: (T) -> Unit,
-        block: (suspend () -> Flow<Result<T>>)
+        onSuccess: (T?) -> Unit,
+        block: (suspend () -> Flow<Result<T?>>)
     ){
         coroutineScope.launch {
             block.invoke()
                 .onStart { onLoading?.invoke(true) }
                 .onEach { result ->
                     if (result.isSuccess) {
-                        result.getOrNull()?.let {
-                            onSuccess.invoke(it)
-                        }
+                        onSuccess.invoke(result.getOrNull())
                     }else {
                         result.exceptionOrNull()?.let {
                             onError?.invoke(it.message ?: "Unknown Error")

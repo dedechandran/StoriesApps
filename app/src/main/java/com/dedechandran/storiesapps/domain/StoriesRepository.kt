@@ -7,4 +7,5 @@ interface StoriesRepository {
     suspend fun login(email: String, password: String): Flow<Result<LoginModel>>
     suspend fun register(name: String, email: String, password: String): Flow<Result<Unit>>
     suspend fun saveLoginSession(loginSession: LoginModel): Flow<Result<Unit>>
+    suspend fun getLoginSession(): Flow<Result<LoginModel?>>
 }

@@ -3,6 +3,7 @@ package com.dedechandran.storiesapps.data
 import android.util.Log
 import com.dedechandran.storiesapps.common.*
 import com.dedechandran.storiesapps.data.local.SessionManager
+import com.dedechandran.storiesapps.data.local.toLoginModel
 import com.dedechandran.storiesapps.data.network.LoginRequest
 import com.dedechandran.storiesapps.data.network.RegisterRequest
 import com.dedechandran.storiesapps.data.network.StoriesApi
@@ -86,9 +87,19 @@ class StoriesRepositoryImpl @Inject constructor(
 
     override suspend fun saveLoginSession(loginSession: LoginModel): Flow<Result<Unit>> {
         return flow {
-            runCatching {
+            val result = runCatching {
                 sessionManager.saveLoginSession(loginSession.toLoginEntity())
             }
+            emit(result)
+        }
+    }
+
+    override suspend fun getLoginSession(): Flow<Result<LoginModel?>> {
+        return flow {
+            val result = runCatching {
+                sessionManager.getLoginSession()?.toLoginModel()
+            }
+            emit(result)
         }
     }
 }

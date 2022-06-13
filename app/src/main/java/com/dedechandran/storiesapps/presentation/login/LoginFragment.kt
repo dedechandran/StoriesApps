@@ -53,6 +53,9 @@ class LoginFragment : Fragment() {
                 requireContext().hideSoftKeyboard(requireActivity().currentFocus)
                 requireActivity().window.decorView.clearFocus()
             }
+            vm.loginSuccessEvent.observe(this) {
+                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+            }
         }
     }
 

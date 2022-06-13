@@ -16,8 +16,8 @@ open class BaseViewModel : ViewModel(), CoroutineUseCaseRunner {
     override fun <T> withUseCaseScope(
         onLoading: ((Boolean) -> Unit)?,
         onError: ((String) -> Unit)?,
-        onSuccess: (T) -> Unit,
-        block: suspend () -> Flow<Result<T>>
+        onSuccess: (T?) -> Unit,
+        block: suspend () -> Flow<Result<T?>>
     ) {
         val loadingUpdater = { isLoading: Boolean ->
             isLoadingEvent.setValue(isLoading)

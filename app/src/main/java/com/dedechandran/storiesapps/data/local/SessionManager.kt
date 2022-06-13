@@ -18,7 +18,7 @@ class SessionManager @Inject constructor(private val sharedPreferences: SharedPr
 
     fun getLoginSession(): LoginEntity? {
         val loginSession = sharedPreferences.getString(LOGIN_SESSION_KEY, "")
-        return if (loginSession == null) {
+        return if (loginSession.isNullOrEmpty()) {
             null
         } else {
             Gson().fromJson(

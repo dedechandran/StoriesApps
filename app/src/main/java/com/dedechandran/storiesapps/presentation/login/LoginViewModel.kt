@@ -2,6 +2,7 @@ package com.dedechandran.storiesapps.presentation.login
 
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
+import com.dedechandran.storiesapps.common.SingleLiveEvent
 import com.dedechandran.storiesapps.domain.LoginUseCase
 import com.dedechandran.storiesapps.presentation.BaseViewModel
 import com.dedechandran.storiesapps.presentation.TextInputState
@@ -25,10 +26,12 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    val loginSuccessEvent = SingleLiveEvent<Unit>()
+
     fun login() {
         withUseCaseScope(
             onSuccess = {
-                Log.d("onSuccessLogin", "${it}")
+                loginSuccessEvent.setValue(Unit)
             },
         ) {
             val params = LoginUseCase.Params(
