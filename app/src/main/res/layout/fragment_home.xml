@@ -31,14 +31,21 @@
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:indicatorColor="?attr/colorPrimary"
                 android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="?attr/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <com.dedechandran.storiesapps.presentation.home.StoryCardList
+                android:id="@+id/rvStories"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/ivEmptyStory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

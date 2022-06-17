@@ -4,12 +4,10 @@ import android.util.Log
 import com.dedechandran.storiesapps.common.*
 import com.dedechandran.storiesapps.data.local.SessionManager
 import com.dedechandran.storiesapps.data.local.toLoginModel
-import com.dedechandran.storiesapps.data.network.LoginRequest
-import com.dedechandran.storiesapps.data.network.RegisterRequest
-import com.dedechandran.storiesapps.data.network.StoriesApi
-import com.dedechandran.storiesapps.data.network.toLoginModel
+import com.dedechandran.storiesapps.data.network.*
 import com.dedechandran.storiesapps.domain.LoginModel
 import com.dedechandran.storiesapps.domain.StoriesRepository
+import com.dedechandran.storiesapps.domain.StoryModel
 import com.dedechandran.storiesapps.domain.toLoginEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -100,6 +98,28 @@ class StoriesRepositoryImpl @Inject constructor(
                 sessionManager.getLoginSession()?.toLoginModel()
             }
             emit(result)
+        }
+    }
+
+    override suspend fun getStories(): Flow<Result<List<StoryModel>>> {
+        return flow {
+            val queryParams = mapOf<String,String>()
+            when (val result = storiesApi.getStories(queryParams)){
+                is NetworkResponse.Success -> {
+                    val data = result.body.toStoryModel()
+                    emit(Result.success(data))
+                }
+                is NetworkResponse.ApiError -> {
+                    emit(Result.failure(StoriesException.GeneralErrorException))
+                }
+                is NetworkResponse.NetworkError -> {
+                    emit(Result.failure(StoriesException.NoNetworkException))
+                }
+
+                is NetworkResponse.UnknownError -> {
+                    emit(Result.failure(StoriesException.UnknownErrorException))
+                }
+            }
         }
     }
 }

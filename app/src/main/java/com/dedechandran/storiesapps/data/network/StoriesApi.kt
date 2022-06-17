@@ -2,8 +2,7 @@ package com.dedechandran.storiesapps.data.network
 
 import com.dedechandran.storiesapps.common.GenericResponse
 import com.dedechandran.storiesapps.common.NetworkResponse
-import retrofit2.http.Body
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface StoriesApi {
 
@@ -12,4 +11,7 @@ interface StoriesApi {
 
     @POST("register")
     suspend fun register(@Body body: RegisterRequest): GenericResponse<Unit>
+
+    @GET("stories")
+    suspend fun getStories(@QueryMap params: Map<String,String>): GenericResponse<StoryResponse>
 }
