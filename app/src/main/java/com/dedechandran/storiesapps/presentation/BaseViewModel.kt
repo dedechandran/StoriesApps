@@ -11,29 +11,6 @@ open class BaseViewModel : ViewModel(), CoroutineUseCaseRunner {
         get() = viewModelScope
 
     val isLoadingEvent = SingleLiveEvent<Boolean>()
-    val showErrorEvent = SingleLiveEvent<String>()
+    val showErrorEvent = SingleLiveEvent<String?>()
 
-    override fun <T> withUseCaseScope(
-        onLoading: ((Boolean) -> Unit)?,
-        onError: ((String) -> Unit)?,
-        onSuccess: (T?) -> Unit,
-        block: suspend () -> Flow<Result<T?>>
-    ) {
-        val loadingUpdater = { isLoading: Boolean ->
-            isLoadingEvent.setValue(isLoading)
-        }
-        val errorHandler = { errorMessage: String ->
-            showErrorEvent.setValue(errorMessage)
-        }
-        super.withUseCaseScope(
-            onLoading = {
-                onLoading?.invoke(it) ?: loadingUpdater.invoke(it)
-            },
-            onError = {
-                onError?.invoke(it) ?: errorHandler.invoke(it)
-            },
-            onSuccess,
-            block
-        )
-    }
 }

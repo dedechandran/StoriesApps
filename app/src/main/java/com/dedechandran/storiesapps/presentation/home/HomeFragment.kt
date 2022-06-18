@@ -34,10 +34,20 @@ class HomeFragment : Fragment() {
         with(viewLifecycleOwner) {
             vm.storyDisplayedItems.observe(this) {
                 binding.rvStories.setItems(it)
-                binding.ivEmptyStory.isVisible = it.isEmpty()
             }
             vm.isLoadingEvent.observe(this) {
                 binding.progressBar.isVisible = it
+            }
+            vm.showErrorEvent.observe(this) {
+                binding.rvStories.isVisible = it.isNullOrEmpty()
+                binding.divErrorState.root.isVisible = it.isNullOrEmpty().not()
+                binding.divErrorState.tvErrorRemark.text = it
+                binding.divErrorState.btnRetry.setOnClickListener {
+                    vm.getStories()
+                }
+            }
+            vm.isEmptyStateDisplayed.observe(this) {
+                binding.ivEmptyStory.isVisible = it
             }
         }
     }

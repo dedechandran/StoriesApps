@@ -52,6 +52,15 @@ class RegisterViewModel @Inject constructor(private val registerUseCase: Registe
 
     fun register() {
         withUseCaseScope(
+            onStart = {
+                isLoadingEvent.setValue(true)
+            },
+            onCompletion = {
+                isLoadingEvent.setValue(false)
+            },
+            onError = {
+                showErrorEvent.setValue(it)
+            },
             onSuccess = {
                 successfullyRegisterEvent.setValue(Unit)
             }

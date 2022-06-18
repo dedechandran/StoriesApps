@@ -8,14 +8,15 @@ interface CoroutineUseCaseRunner {
     val coroutineScope: CoroutineScope
 
     fun <T> withUseCaseScope(
-        onLoading: ((Boolean) -> Unit)? = null,
-        onError: ((String) -> Unit)? = null,
+        onStart: (() -> Unit)? = null,
+        onCompletion: (() -> Unit)? = null,
+        onError: ((String?) -> Unit)? = null,
         onSuccess: (T?) -> Unit,
         block: (suspend () -> Flow<Result<T?>>)
     ){
         coroutineScope.launch {
             block.invoke()
-                .onStart { onLoading?.invoke(true) }
+                .onStart { onStart?.invoke() }
                 .onEach { result ->
                     if (result.isSuccess) {
                         onSuccess.invoke(result.getOrNull())
@@ -26,7 +27,7 @@ interface CoroutineUseCaseRunner {
                     }
                 }
                 .catch { onError?.invoke(it.message ?: "Unknown Error") }
-                .onCompletion { onLoading?.invoke(false) }
+                .onCompletion { onCompletion?.invoke() }
                 .launchIn(coroutineScope)
         }
     }

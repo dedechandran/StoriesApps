@@ -1,5 +1,6 @@
 package com.dedechandran.storiesapps.presentation.home
 
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.dedechandran.storiesapps.domain.GetStoriesUseCase
@@ -13,10 +14,32 @@ class HomeViewModel @Inject constructor(private val getStoriesUseCase: GetStorie
     BaseViewModel() {
 
     private val stories = MutableLiveData<List<StoryModel>>()
-    val storyDisplayedItems = Transformations.map(stories,this::getStoryDisplayedItems)
+    val storyDisplayedItems = Transformations.map(stories, this::getStoryDisplayedItems)
+
+    val isEmptyStateDisplayed = MediatorLiveData<Boolean>().apply {
+        addSource(storyDisplayedItems) {
+            value = it.isNullOrEmpty() && showErrorEvent.value.isNullOrEmpty() && isLoadingEvent.value?.not() ?: false
+        }
+        addSource(showErrorEvent) {
+            value = storyDisplayedItems.value.isNullOrEmpty() && it.isNullOrEmpty() && isLoadingEvent.value?.not() ?: false
+        }
+        addSource(isLoadingEvent) { loading ->
+            value = storyDisplayedItems.value.isNullOrEmpty() && showErrorEvent.value.isNullOrEmpty() && !loading
+        }
+    }
 
     fun getStories() {
         withUseCaseScope(
+            onStart = {
+                isLoadingEvent.setValue(true)
+                showErrorEvent.setValue(null)
+            },
+            onCompletion = {
+                isLoadingEvent.setValue(false)
+            },
+            onError = {
+                showErrorEvent.setValue(it)
+            },
             onSuccess = {
                 stories.value = it
             }

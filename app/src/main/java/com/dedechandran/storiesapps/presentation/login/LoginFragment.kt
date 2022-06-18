@@ -44,8 +44,10 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(viewLifecycleOwner) {
-            vm.showErrorEvent.observe(this) {
-                Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+            vm.showErrorEvent.observe(this) { message ->
+                message?.let {
+                    Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                }
             }
             vm.isLoadingEvent.observe(this) {
                 binding.divLoadingIndicator.root.isVisible = it

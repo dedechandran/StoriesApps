@@ -30,6 +30,15 @@ class LoginViewModel @Inject constructor(
 
     fun login() {
         withUseCaseScope(
+            onStart = {
+                isLoadingEvent.setValue(true)
+            },
+            onCompletion = {
+                isLoadingEvent.setValue(false)
+            },
+            onError = {
+                showErrorEvent.setValue(it)
+            },
             onSuccess = {
                 loginSuccessEvent.setValue(Unit)
             },

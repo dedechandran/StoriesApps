@@ -68,8 +68,10 @@ class RegisterFragment : Fragment() {
                 Snackbar.make(binding.root, "Successfully Register", Snackbar.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             }
-            vm.showErrorEvent.observe(this) {
-                Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+            vm.showErrorEvent.observe(this) { message ->
+                message?.let {
+                    Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
     }
